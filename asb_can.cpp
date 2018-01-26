@@ -115,7 +115,11 @@
         unsigned long addr = asbCanAddrAssemble(type, target, source, port);
         if(addr == 0) return false;
 
-        lastErr = _interface.sendMsgBuf(addr, 1, len, data);
+        // Need to be extented to be able so send address of size of long
+        const byte ext = 1;
+
+        lastErr = _interface.sendMsgBuf(addr, ext, len, data);
+
         if(lastErr != CAN_OK) return false;
         return true;
     }

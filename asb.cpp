@@ -90,9 +90,9 @@
             #endif
             return 0;
         }
-        
+
         bytes++; //Header
-        
+
         #ifdef ASB_DEBUG
             Serial.print(F("ID is ")); Serial.println(id, HEX); Serial.flush();
             Serial.print(F("size is ")); Serial.println(bytes, HEX); Serial.flush();
@@ -133,7 +133,7 @@
                 #endif
 
                 check  = (id << 4) | len;
-                
+
                 #ifdef ASB_DEBUG
                     Serial.print(F("ID is now ")); Serial.println(check, HEX); Serial.flush();
                 #endif
@@ -229,7 +229,7 @@
     void ASB::asbProcess(asbPacket &pkg) {
         byte i,temp;
         byte data[8];
-        
+
         //Internal logic
         if(pkg.len >= 1) {
             switch(pkg.data[0]) {
