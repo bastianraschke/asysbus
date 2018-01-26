@@ -59,6 +59,7 @@
     #define ASB_CMD_S_PH          0xD8 //smth per Hour, unsinged int
     #define ASB_CMD_S_PM          0xD9 //smth per Minute, unsinged int (RPM, Pulse PM, etc)
     #define ASB_CMD_S_PS          0xDA //smth per Second, unsinged int
+    #define ASB_CMD_S_LIGHT       0xDB //on/off state, transition effect on/off, brightness, R, G, B, W color values
 
     /**
      * Packet metadata
