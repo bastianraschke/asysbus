@@ -59,6 +59,7 @@
 
     byte ASB_CAN::begin() {
         lastErr = _interface.begin(_speed, _clockspd);
+        return lastErr;
     }
 
     asbMeta ASB_CAN::asbCanAddrParse(unsigned long canAddr) {
@@ -147,6 +148,5 @@
 
         return true;
     }
-
 
 #endif /* ASB_CAN__C */
