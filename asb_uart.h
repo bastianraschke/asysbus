@@ -38,8 +38,9 @@
 
             /**
              * Incoming data buffer
+             * The length 43 is the theoretically maximum length of an Asysbus packet, but need 2 byte extra
              */
-            byte _buf[35];
+            byte _buf[45];
 
             /**
              * Search for next start byte and shift buffer

@@ -40,29 +40,35 @@
         _interface->write(0x1F);
         _interface->print(source,HEX);
         _interface->write(0x1F);
-        if(port > 0) {
+
+        if (port > 0) {
             _interface->print(port,HEX);
-        }else{
+        } else {
             //Arduino print internally casts to double :(
             _interface->print(F("FF"));
         }
+
         _interface->write(0x1F);
         _interface->print(len,HEX);
 
         _interface->write(0x02);
-        if(len > 0) {
+
+        if (len > 0) {
             for(tlen = 0; tlen < len; tlen++) {
                 _interface->print(data[tlen], HEX);
                 _interface->write(0x1F);
             }
         }
+
         _interface->write(0x04);
         _interface->println();
+
         return true;
     }
 
     bool ASB_UART::bufShift(byte len) {
-        if(_buf[0] == 0) return false;
+        if (_buf[0] == 0) return false;
+
         byte i;
 
         while (len > 0) {
@@ -79,7 +85,7 @@
 
 
     bool ASB_UART::bufShift() {
-        if(_buf[0] == 0) return false;
+        if (_buf[0] == 0) return false;
 
         byte i;
 
@@ -89,7 +95,8 @@
                 _buf[(i+1)] = 0;
             }
             _buf[0]--;
-        }while(_buf[1] != 0x01 && _buf[0] > 0);
+        } while(_buf[1] != 0x01 && _buf[0] > 0);
+
         return true;
     }
 
@@ -100,26 +107,33 @@
         bool retry = false;
         bool break2 = false;
 
-        if(!_interface->available()) return false;
+        if (!_interface->available()) return false;
 
         while(_interface->available()) {
+
             read = _interface->read();
 
-            if(read == 0x01) bufShift(_buf[0]);
+            if (read == 0x01) bufShift(_buf[0]);
 
             do {
-                if(_buf[0] == 0) {  //No active RX, ignore everything until SOH
-                    if(read == 0x01) {
+                if (_buf[0] == 0) {  //No active RX, ignore everything until SOH
+                    if (read == 0x01) {
                         _buf[0] = 2;
                         _buf[1] = read;
                     }
-                }else{
+                } else {
                     _buf[_buf[0]] = read;
 
                     _buf[0]++;
-                    if(_buf[(_buf[0]-1)] == 0x04 && _buf[0] >= 10) {
+
+                    const byte packetLength = _buf[0];
+                    const byte lastByteIndex = packetLength - 1;
+                    const byte lastByte = _buf[lastByteIndex];
+
+                    if (lastByte == 0x04 && _buf[0] >= 10) {
                         state = 0;
                         break2 = false;
+
                         for(read = 2; read <= _buf[0] && !break2; read++) {
                             switch(state) {
                                 case 0:
@@ -127,35 +141,35 @@
                                     state++;
                                     break;
                                 case 1:
-                                    if(_buf[read] != 0x1F) {
+                                    if (_buf[read] != 0x1F) {
                                         retry = bufShift();
                                         break2 = true;
                                         break;
-                                    }else{
+                                    } else {
                                         state++;
                                     }
                                     break;
                                 case 2:
-                                    if(_buf[read] == 0x1F) {
+                                    if (_buf[read] == 0x1F) {
                                         state++;
-                                    }else{
+                                    } else {
                                         pkg.meta.target <<=4;
                                         pkg.meta.target |= asbHexToByte(_buf[read]);
                                     }
                                     break;
                                 case 3:
-                                    if(_buf[read] == 0x1F) {
+                                    if (_buf[read] == 0x1F) {
                                         state++;
                                         pkg.meta.port = 0;
-                                    }else{
+                                    } else {
                                         pkg.meta.source <<=4;
                                         pkg.meta.source |= asbHexToByte(_buf[read]);
                                     }
                                     break;
                                 case 4:
-                                    if(_buf[read] == 0x1F) {
+                                    if (_buf[read] == 0x1F) {
                                         state++;
-                                    }else{
+                                    } else {
                                         pkg.meta.port <<=4;
                                         pkg.meta.port |= asbHexToByte(_buf[read]);
                                     }
@@ -165,22 +179,22 @@
                                     state++;
                                     break;
                                 case 6:
-                                    if(_buf[read] != 0x02) {
+                                    if (_buf[read] != 0x02) {
                                         retry = bufShift();
                                         break2 = true;
                                         break;
-                                    }else{
+                                    } else {
                                         curwrite=0;
                                         state++;
                                     }
                                     break;
                                 case 7:
-                                    if(_buf[read] == 0x1F) {
+                                    if (_buf[read] == 0x1F) {
                                         curwrite++;
                                         pkg.data[curwrite] = 0;
-                                    }else if(_buf[read] == 0x04) {
+                                    }else if (_buf[read] == 0x04) {
                                         state++;
-                                    }else{
+                                    } else {
                                         pkg.data[curwrite] <<=4;
                                         pkg.data[curwrite] |= asbHexToByte(_buf[read]);
                                     }
@@ -190,19 +204,20 @@
                                     return true;
                             }
                         }
-                    }else if(_buf[0] > 23) {
+                    // The length 43 is the theoretically maximum length of an Asysbus packet
+                    }else if (_buf[0] > 43) {
                         retry = bufShift();
                     }
                 }
-            }while(retry);
+            } while(retry);
         }
         return false;
     }
 
     byte ASB_UART::asbHexToByte(byte hex) {
-        if(hex >= '0' && hex <= '9') return hex-'0';
-        if(hex >= 'a' && hex <= 'f') return hex-'a'+10;
-        if(hex >= 'A' && hex <= 'F') return hex-'A'+10;
+        if (hex >= '0' && hex <= '9') return hex-'0';
+        if (hex >= 'a' && hex <= 'f') return hex-'a'+10;
+        if (hex >= 'A' && hex <= 'F') return hex-'A'+10;
         return 0;
     }
 
