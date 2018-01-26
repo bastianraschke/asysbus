@@ -184,7 +184,7 @@
              * @param data array of data bytes to send
              * @return ind number of errors
              */
-            byte asbSend(asbMeta meta, byte len, byte *data);
+            byte asbSend(asbMeta meta, byte len, const byte *data);
             /**
              * Send a message to the bus
              * @param type 2 bit message type (ASB_PKGTYPE_*)
@@ -193,7 +193,7 @@
              * @param data array of data bytes to send
              * @return ind number of errors
              */
-            byte asbSend(byte type, unsigned int target, byte len, byte *data);
+            byte asbSend(byte type, unsigned int target, byte len, const byte *data);
             /**
              * Send a message to the bus
              * @param type 2 bit message type (ASB_PKGTYPE_*)
@@ -203,7 +203,7 @@
              * @param data array of data bytes to send
              * @return ind number of errors
              */
-            byte asbSend(byte type, unsigned int target, char port, byte len, byte *data);
+            byte asbSend(byte type, unsigned int target, char port, byte len, const byte *data);
             /**
              * Send a message to the bus
              * @param type 2 bit message type (ASB_PKGTYPE_*)
@@ -216,7 +216,7 @@
              * @return ind number of errors
              * @see busAttach()
              */
-            byte asbSend(byte type, unsigned int target, unsigned int source, char port, byte len, byte *data, char skip);
+            byte asbSend(byte type, unsigned int target, unsigned int source, char port, byte len, const byte *data, char skip);
 
             /**
              * Receive a message from the bus

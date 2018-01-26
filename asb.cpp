@@ -154,19 +154,19 @@
         return 0;
     }
 
-    byte ASB::asbSend(asbMeta meta, byte len, byte *data) {
+    byte ASB::asbSend(asbMeta meta, byte len, const byte *data) {
         return asbSend(meta.type, meta.target, meta.source, meta.port, len, data, meta.busId);
     }
 
-    byte ASB::asbSend(byte type, unsigned int target, byte len, byte *data) {
+    byte ASB::asbSend(byte type, unsigned int target, byte len, const byte *data) {
         return asbSend(type, target, _nodeId, -1, len, data, -1);
     }
 
-    byte ASB::asbSend(byte type, unsigned int target, char port, byte len, byte *data) {
+    byte ASB::asbSend(byte type, unsigned int target, char port, byte len, const byte *data) {
         return asbSend(type, target, _nodeId, port, len, data, -1);
     }
 
-    byte ASB::asbSend(byte type, unsigned int target, unsigned int source, char port, byte len, byte *data, char skip) {
+    byte ASB::asbSend(byte type, unsigned int target, unsigned int source, char port, byte len, const byte *data, char skip) {
         bool state;
         byte errors=0,i;
 
